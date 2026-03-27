@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de ROI — BullsEye</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:        #1E2060;
+      --navy-light:  #2B2D7A;
+      --cyan:        #00D9C8;
+      --cyan-dark:   #00B8A9;
+      --white:       #FFFFFF;
+      --gray-50:     #F8F9FF;
+      --gray-100:    #EEF0F8;
+      --gray-200:    #D8DCEE;
+      --gray-500:    #8890B5;
+      --gray-700:    #444878;
+      --positive:    #00C48C;
+      --radius:      14px;
+      --shadow:      0 4px 24px rgba(30,32,96,0.10);
+      --shadow-lg:   0 8px 40px rgba(30,32,96,0.18);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    header {
+      background: var(--navy);
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 72px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.28);
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+    }
+    .logo-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.3px;
+    }
+    .logo-text span { color: var(--cyan); }
+    .header-badge {
+      background: rgba(0,217,200,0.14);
+      border: 1px solid rgba(0,217,200,0.32);
+      color: var(--cyan);
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 100px;
+    }
+
+    /* ── HERO ──────────────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--navy) 0%, #292C8A 55%, #1a3060 100%);
+      padding: 72px 48px 88px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+    }
+    .hero::before {
+      top: -100px; right: -80px;
+      width: 420px; height: 420px;
+      background: radial-gradient(circle, rgba(0,217,200,0.11) 0%, transparent 68%);
+    }
+    .hero::after {
+      bottom: -70px; left: -70px;
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(0,217,200,0.07) 0%, transparent 68%);
+    }
+    .hero h1 {
+      font-size: clamp(30px, 4.5vw, 52px);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.12;
+      position: relative;
+      z-index: 1;
+    }
+    .hero h1 span { color: var(--cyan); }
+    .hero p {
+      margin-top: 18px;
+      font-size: 17px;
+      color: rgba(255,255,255,0.70);
+      max-width: 560px;
+      margin-inline: auto;
+      line-height: 1.6;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-steps {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-top: 36px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+    .hero-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .hero-step .step-num {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(0,217,200,0.2);
+      border: 1.5px solid var(--cyan);
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── LAYOUT ─────────────────────────────────────────── */
+    .container {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      margin-top: -40px;
+      position: relative;
+    }
+
+    @media (max-width: 840px) {
+      .grid { grid-template-columns: 1fr; margin-top: -28px; }
+      header { padding: 0 16px; }
+      .hero  { padding: 40px 16px 56px; }
+      .hero h1 { font-size: clamp(26px, 8vw, 40px); }
+      .card { padding: 22px 18px; }
+      .results-card { padding: 24px 18px; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .kpi { padding: 14px 10px; }
+      .kpi-value { font-size: 18px; }
+      .kpi-label { font-size: 9.5px; }
+      .slider-badge { min-width: 44px; font-size: 13px; padding: 5px 8px; }
+      .hero-steps { gap: 16px; }
+      .container { padding: 0 14px 60px; }
+    }
+
+    /* ── CARDS ──────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px;
+    }
+    .card.full-width { grid-column: 1 / -1; }
+
+    .card-eyebrow {
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan-dark);
+      margin-bottom: 4px;
+    }
+    .card-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 26px;
+    }
+    .card-divider {
+      border: none;
+      border-top: 1px solid var(--gray-100);
+      margin: 24px 0;
+    }
+
+    /* ── FORM ─────────────────────────────────────────────── */
+    .field { margin-bottom: 20px; }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 7px;
+    }
+    label .hint {
+      font-weight: 400;
+      color: var(--gray-500);
+      font-size: 12px;
+    }
+
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 9px;
+      font-size: 16px;
+      font-family: 'Inter', sans-serif;
+      color: var(--navy);
+      background: var(--white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    /* Solo el select necesita appearance:none para el custom arrow */
+    select {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input[type="number"]:focus,
+    select:focus {
+      border-color: var(--cyan-dark);
+      box-shadow: 0 0 0 3px rgba(0,184,169,0.15);
+    }
+    /* iOS touch: evita zoom doble-tap y mejora respuesta táctil */
+    input[type="number"],
+    input[type="range"],
+    select {
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238890B5' stroke-width='1.8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    /* Slider */
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--gray-200);
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--navy);
+      border: 3px solid var(--cyan);
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+    .slider-badge {
+      min-width: 52px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      background: var(--gray-100);
+      border-radius: 8px;
+      padding: 5px 10px;
+    }
+
+    /* Currency input group */
+    .input-group { display: flex; }
+    .input-group input {
+      border-radius: 9px 0 0 9px;
+      border-right: none;
+      flex: 1;
+    }
+    .input-group input:focus { border-radius: 9px 0 0 9px; }
+    .input-group .currency-select {
+      width: auto;
+      min-width: 76px;
+      border-radius: 0 9px 9px 0;
+      border-left: 1.5px solid var(--gray-200);
+      background-color: var(--gray-100);
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--navy);
+      padding: 11px 28px 11px 12px;
+    }
+
+    /* Cost box */
+    .cost-box {
+      background: linear-gradient(135deg, #F4F5FF, #ECEFFE);
+      border: 1.5px solid #DDE0F5;
+      border-radius: 12px;
+      padding: 22px;
+    }
+    .cost-box-note {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-bottom: 18px;
+      line-height: 1.55;
+    }
+
+    /* Mini summary */
+    .mini-summary {
+      background: var(--gray-50);
+      border-radius: 10px;
+      padding: 16px;
+      margin-top: 8px;
+    }
+    .mini-summary .ms-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 10px;
+    }
+    .mini-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13.5px;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .mini-row.total {
+      border-top: 1px solid var(--gray-200);
+      margin-top: 6px;
+      padding-top: 10px;
+      font-weight: 700;
+      font-size: 14.5px;
+    }
+    .mini-row .val { font-weight: 700; }
+
+    /* Exchange */
+    .exchange-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .exchange-mini-label {
+      font-size: 11px;
+      color: var(--gray-500);
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .exchange-note {
+      font-size: 11.5px;
+      color: var(--gray-500);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    /* ── RESULTS ────────────────────────────────────────── */
+    .results-card {
+      grid-column: 1 / -1;
+      background: linear-gradient(140deg, var(--navy) 0%, #25288C 60%, #1a3060 100%);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 40px;
+      color: var(--white);
+    }
+    .results-card .card-eyebrow { color: var(--cyan); }
+    .results-card .card-title   { color: var(--white); margin-bottom: 30px; }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.11);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .kpi:hover { background: rgba(255,255,255,0.11); }
+    .kpi-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 8px;
+    }
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.1;
+      word-break: break-all;
+    }
+    .kpi-sub {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.38);
+      margin-top: 4px;
+    }
+    .kpi.cyan   .kpi-value { color: var(--cyan); }
+    .kpi.green  .kpi-value { color: #4DFFB8; }
+
+    /* ROI bar */
+    .bar-section { margin-top: 12px; }
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 8px;
+    }
+    .bar-track {
+      height: 9px;
+      background: rgba(255,255,255,0.09);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--cyan-dark), var(--cyan));
+      transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1);
+      min-width: 3px;
+    }
+
+    /* Timeline note */
+    .timeline-note {
+      background: rgba(255,255,255,0.06);
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 9px 9px 0;
+      padding: 14px 18px;
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.72);
+      margin-top: 20px;
+      line-height: 1.65;
+    }
+    .timeline-note strong { color: var(--cyan); }
+
+    /* ── CTA ────────────────────────────────────────────── */
+    .cta-block {
+      text-align: center;
+      padding: 56px 24px 0;
+    }
+    .cta-block h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .cta-block .sub {
+      font-size: 15px;
+      color: var(--gray-500);
+      margin-bottom: 28px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 15px 34px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 4px 22px rgba(30,32,96,0.25);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      background: var(--navy-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(30,32,96,0.32);
+    }
+
+    /* ── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background: var(--navy);
+      text-align: center;
+      padding: 28px 24px;
+      margin-top: 64px;
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.38);
+    }
+    footer span { color: var(--cyan); }
+
+    /* ── AVISO MÓVIL ────────────────────────────────────── */
+    .mobile-notice {
+      background: #FFF3CD;
+      border-bottom: 2px solid #FFC107;
+      padding: 13px 18px;
+      font-size: 13.5px;
+      color: #5a4000;
+      text-align: center;
+      line-height: 1.55;
+      display: none;       /* oculto por defecto */
+    }
+    .mobile-notice a {
+      color: var(--navy);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+    /* Mostrar sólo en móvil Y sólo si JS no lo ocultó */
+    @media (max-width: 900px) {
+      .mobile-notice { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── OVERLAY: aparece cuando se abre en WhatsApp / WebView iOS ── -->
+<div id="webview-overlay"
+     style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+            background:rgba(20,22,72,0.97);z-index:9999;
+            flex-direction:column;align-items:center;justify-content:center;
+            padding:32px 20px;text-align:center;font-family:'Inter',sans-serif;">
+
+  <div style="font-size:52px;margin-bottom:18px;">🔗</div>
+
+  <h2 style="color:#00D9C8;font-size:21px;font-weight:800;margin-bottom:12px;line-height:1.3;">
+    Abre en Safari para<br>usar la calculadora
+  </h2>
+
+  <p style="color:rgba(255,255,255,0.75);font-size:14.5px;line-height:1.65;margin-bottom:24px;max-width:300px;">
+    WhatsApp abre archivos en un visor interno que bloquea la edición de campos.
+    Necesitas abrirlo en tu navegador.
+  </p>
+
+  <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(0,217,200,0.25);
+              border-radius:14px;padding:20px 22px;margin-bottom:26px;
+              width:100%;max-width:320px;text-align:left;">
+    <div style="color:rgba(255,255,255,0.5);font-size:10px;font-weight:700;
+                text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">
+      Cómo abrirlo en Safari
+    </div>
+    <div style="color:white;font-size:14px;line-height:2;">
+      1. Toca los <strong style="color:#00D9C8;">⋮ tres puntos</strong> (arriba derecha)<br>
+      2. Elige <strong style="color:#00D9C8;">"Abrir en navegador"</strong><br>
+      <span style="color:rgba(255,255,255,0.4);font-size:12px;">— o —</span><br>
+      Toca <strong style="color:#00D9C8;">Compartir ↑</strong> → <strong style="color:#00D9C8;">Safari</strong>
+    </div>
+  </div>
+
+  <button onclick="document.getElementById('webview-overlay').style.display='none'"
+          style="background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);
+                 border:1px solid rgba(255,255,255,0.2);border-radius:100px;
+                 padding:10px 26px;font-size:13px;font-family:inherit;cursor:pointer;">
+    Ver de todas formas (sin interactividad)
+  </button>
+</div>
+
+<!-- ── HEADER ──────────────────────────────────────────── -->
+<header>
+  <div class="header-logo">
+    <img src="data:image/png;base64,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" alt="BullsEye" style="height:36px;" />
+  </div>
+  <div class="header-badge">Calculadora ROI</div>
+</header>
+
+<!-- ── AVISO MÓVIL (se oculta automáticamente si JS corre) ── -->
+<div class="mobile-notice" id="mob-notice">
+  ⚠️ <strong>¿Los campos no son editables o los resultados no se ven?</strong><br>
+  Abre este archivo directamente en <strong>Safari</strong> para la versión interactiva.<br>
+  En WhatsApp: toca los <strong>3 puntos (⋮) → Abrir en navegador</strong>.
+</div>
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<div class="hero">
+  <h1>¿Cuánto puede generarte<br/><span>BullsEye</span>?</h1>
+  <p>
+    Ingresa los datos de tu proceso comercial y calcula el retorno estimado
+    de contratar nuestros servicios.
+  </p>
+  <div class="hero-steps">
+    <div class="hero-step"><div class="step-num">1</div>Tu proceso comercial</div>
+    <div class="hero-step"><div class="step-num">2</div>Inversión en BullsEye</div>
+    <div class="hero-step"><div class="step-num">3</div>Resultados y ROI</div>
+  </div>
+</div>
+
+<!-- ── MAIN ──────────────────────────────────────────────── -->
+<div class="container">
+  <div class="grid">
+
+    <!-- CARD 1 -->
+    <div class="card">
+      <div class="card-eyebrow">Paso 1</div>
+      <div class="card-title">Tu proceso comercial</div>
+
+      <div class="field">
+        <label>Reuniones calificadas por mes</label>
+        <input type="number" id="meetings" min="1" max="1000" value="10"
+               inputmode="numeric" oninput="calculate()" onchange="calculate()" />
+      </div>
+
+      <div class="field">
+        <label>
+          Tasa reunión → propuesta
+          <span class="hint"> · predeterminado 70%</span>
+        </label>
+        <div class="slider-wrap">
+          <input type="range" id="mtp" min="1" max="100" value="70"
+                 oninput="syncSlider('mtp','mtp-v');calculate()" />
+          <div class="slider-badge" id="mtp-v">70%</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tasa propuesta → cierre</label>
+        <div class="slider-wrap">
+          <input type="range" id="ptc" min="1" max="100" value="30"
+                 oninput="syncSlider('ptc','ptc-v');calculate()" />
+          <div class="slider-badge" id="ptc-v">30%</div>
+        </div>
+      </div>
+
+      <hr class="card-divider" />
+
+      <div class="field">
+        <label>Ticket promedio por cliente</label>
+        <div class="input-group">
+          <input type="number" id="ticketVal" min="0" value="500"
+                 inputmode="decimal" oninput="calculate()" onchange="calculate()" />
+          <select id="ticketCur" class="currency-select" onchange="calculate()">
+            <option value="UF">UF</option>
+            <option value="USD">USD</option>
+            <option value="CLP">CLP</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Tiempo promedio de cierre</label>
+        <select id="closingTime" onchange="calculate()">
+          <option value="0.5">2 semanas</option>
+          <option value="1" selected>1 mes</option>
+          <option value="2">2 meses</option>
+          <option value="3">3 meses</option>
+          <option value="4">4 meses</option>
+          <option value="5">5 meses</option>
+          <option value="6">6 meses</option>
+          <option value="7">7 meses</option>
+          <option value="8">8 meses</option>
+          <option value="9">9 meses</option>
+          <option value="10">10 meses</option>
+          <option value="11">11 meses</option>
+          <option value="12">12 meses</option>
+          <option value="13">Más de 12 meses</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="card">
+      <div class="card-eyebrow">Paso 2</div>
+      <div class="card-title">Inversión en BullsEye</div>
+
+      <div class="cost-box">
+        <p class="cost-box-note">
+          Valores editables según tu propuesta comercial. Todos los costos están en <strong>UF</strong>.
+        </p>
+
+        <div class="field">
+          <label>Costo mensual fijo <span class="hint">(UF / mes)</span></label>
+          <input type="number" id="fixedCost" min="0" step="0.5" value="60"
+                 inputmode="decimal" oninput="calculate()" onchange="calculate()" />
+        </div>
+
+        <div class="field">
+          <label>Costo variable por reunión calificada <span class="hint">(UF / reunión)</span></label>
+          <input type="number" id="varCost" min="0" step="0.1" value="3"
+                 inputmode="decimal" oninput="calculate()" onchange="calculate()" />
+        </div>
+      </div>
+
+      <hr class="card-divider" />
+
+      <div class="field">
+        <label>Tipo de cambio de referencia</label>
+        <div class="exchange-grid">
+          <div>
+            <div class="exchange-mini-label">1 UF = CLP</div>
+            <input type="number" id="ufToCLP" value="37500" step="100"
+                   inputmode="numeric" oninput="calculate()" onchange="calculate()" />
+          </div>
+          <div>
+            <div class="exchange-mini-label">1 USD = CLP</div>
+            <input type="number" id="usdToCLP" value="950" step="10"
+                   inputmode="numeric" oninput="calculate()" onchange="calculate()" />
+          </div>
+        </div>
+        <p class="exchange-note" id="uf-note">Cargando valor UF del día…</p>
+      </div>
+
+      <!-- Mini cost summary -->
+      <div class="mini-summary">
+        <div class="ms-label">Costo mensual estimado BullsEye</div>
+        <div class="mini-row">
+          <span>Fijo</span>
+          <span class="val" id="s-fixed">60 UF</span>
+        </div>
+        <div class="mini-row">
+          <span>Variable (reuniones)</span>
+          <span class="val" id="s-var">30 UF</span>
+        </div>
+        <div class="mini-row total">
+          <span>Total mensual</span>
+          <span id="s-total">90 UF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div class="results-card">
+      <div class="card-eyebrow">Resultados</div>
+      <div class="card-title">Tu retorno sobre la inversión estimado</div>
+
+      <!-- Row 1 KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label">Negocios cerrados / mes</div>
+          <div class="kpi-value" id="r-deals">2.1</div>
+          <div class="kpi-sub">estado estable</div>
+        </div>
+        <div class="kpi cyan">
+          <div class="kpi-label">Ingreso mensual</div>
+          <div class="kpi-value" id="r-rev-m">1.1K UF</div>
+          <div class="kpi-sub" id="r-rev-m-uf"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Costo mensual BullsEye</div>
+          <div class="kpi-value" id="r-cost-m">90.0 UF</div>
+          <div class="kpi-sub">en UF</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">Utilidad neta mensual</div>
+          <div class="kpi-value" id="r-net-m" style="color:#4DFFB8">960.0 UF</div>
+          <div class="kpi-sub" id="r-net-m-uf"></div>
+        </div>
+      </div>
+
+      <!-- Row 2 KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi cyan">
+          <div class="kpi-label">Ingreso anual (12 meses)</div>
+          <div class="kpi-value" id="r-rev-a">11.6K UF</div>
+          <div class="kpi-sub" id="r-rev-a-uf"></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Inversión anual BullsEye</div>
+          <div class="kpi-value" id="r-cost-a">1.1K UF</div>
+          <div class="kpi-sub">en UF</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-label">Utilidad neta anual</div>
+          <div class="kpi-value" id="r-net-a" style="color:#4DFFB8">10.5K UF</div>
+          <div class="kpi-sub" id="r-net-a-uf"></div>
+        </div>
+        <div class="kpi cyan">
+          <div class="kpi-label">ROI 12 meses</div>
+          <div class="kpi-value" id="r-roi" style="color:#00D9C8">+969%</div>
+          <div class="kpi-sub" id="r-payback">Payback: 1.1 meses</div>
+        </div>
+      </div>
+
+      <!-- Bar -->
+      <div class="bar-section">
+        <div class="bar-header">
+          <span>Inversión total</span>
+          <span id="bar-mid">ROI: +969%</span>
+          <span id="bar-max"></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="bar-fill" style="width:100%"></div>
+        </div>
+      </div>
+
+      <!-- Timeline note -->
+      <div class="timeline-note" id="timeline-note">
+        Con un ciclo de cierre de <strong>1 mes</strong>, los primeros ingresos llegan en el mes 2.
+        Eso deja <strong>11 meses de ingresos</strong> en el primer año.
+        Utilidad neta estimada en 12 meses: <strong>10.5K UF</strong>.
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <h2>¿Listo para escalar tu pipeline?</h2>
+    <p class="sub">Agenda una sesión con el equipo BullsEye y valida estos números juntos.</p>
+    <a href="https://www.bullseye-abm.com/contacto" target="_blank" class="btn">
+      Hablar con un experto &nbsp;→
+    </a>
+  </div>
+</div><!-- /container -->
+
+<!-- FOOTER -->
+<footer>
+  © 2026 <span>BullsEye</span> &nbsp;|&nbsp; Todos los derechos reservados &nbsp;|&nbsp;
+  Esta calculadora entrega estimaciones referenciales basadas en los datos ingresados.
+</footer>
+
+<!-- ── SCRIPT ──────────────────────────────────────────── -->
+<script>
+  /* helpers */
+  const $ = id => document.getElementById(id);
+
+  /**
+   * Lee el valor numérico de un input con triple fallback para iOS WebView:
+   *  1. el.value            (DOM property — puede estar vacío en Safari/WA)
+   *  2. el.defaultValue     (refleja el atributo value inicial)
+   *  3. el.getAttribute()   (atributo HTML crudo — siempre disponible)
+   */
+  const v = id => {
+    const el = $(id);
+    let raw = el.value;
+    if (raw === '' || raw === undefined || raw === null) {
+      raw = el.defaultValue;
+    }
+    if (raw === '' || raw === undefined || raw === null) {
+      raw = el.getAttribute('value') || '0';
+    }
+    return parseFloat(raw) || 0;
+  };
+
+  function syncSlider(sid, vid) {
+    $(vid).textContent = $(sid).value + '%';
+  }
+
+  function fmt(n, cur, ufCLP, usdCLP) {
+    const ufVal = cur === 'CLP' ? n / ufCLP : cur === 'USD' ? (n * usdCLP) / ufCLP : n;
+    // Display in chosen currency
+    if (cur === 'UF')  return fmtUF(ufVal);
+    if (cur === 'CLP') return fmtCLP(n);
+    if (cur === 'USD') return fmtUSD(n);
+    return fmtUF(ufVal);
+  }
+
+  // ufVal displayed in chosen currency given UF-based ufVal
+  function fmtFromUF(ufVal, cur, ufCLP, usdCLP) {
+    if (cur === 'UF')  return fmtUF(ufVal);
+    if (cur === 'CLP') return fmtCLP(ufVal * ufCLP);
+    if (cur === 'USD') return fmtUSD((ufVal * ufCLP) / usdCLP);
+    return fmtUF(ufVal);
+  }
+
+  function fmtUF(n) {
+    const sign = n < 0 ? '-' : '';
+    n = Math.abs(n);
+    if (n >= 1000) return sign + (n/1000).toFixed(1) + 'K UF';
+    return sign + n.toFixed(1) + ' UF';
+  }
+  function fmtCLP(n) {
+    const sign = n < 0 ? '-' : '';
+    n = Math.abs(n);
+    if (n >= 1e9)  return sign + '$' + (n/1e9).toFixed(2)  + 'B';
+    if (n >= 1e6)  return sign + '$' + (n/1e6).toFixed(1)  + 'M';
+    if (n >= 1e3)  return sign + '$' + (n/1e3).toFixed(0)  + 'K';
+    return sign + '$' + Math.round(n).toLocaleString('es-CL');
+  }
+  function fmtUSD(n) {
+    const sign = n < 0 ? '-' : '';
+    n = Math.abs(n);
+    if (n >= 1e6) return sign + 'US$' + (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return sign + 'US$' + (n/1e3).toFixed(1) + 'K';
+    return sign + 'US$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function toUF(val, cur, ufCLP, usdCLP) {
+    if (cur === 'UF')  return val;
+    if (cur === 'CLP') return val / ufCLP;
+    if (cur === 'USD') return (val * usdCLP) / ufCLP;
+    return val;
+  }
+
+  function closingLabel(m) {
+    if (m === 0.5) return '2 semanas';
+    if (m >= 13)   return 'más de 12 meses';
+    return m + (m === 1 ? ' mes' : ' meses');
+  }
+
+  /* main */
+  function calculate() {
+    // Fallbacks explícitos: si el DOM no entrega el valor (iOS WebView quirk),
+    // usamos los defaults del diseño para que los resultados siempre se muestren.
+    const meetings   = Math.max(v('meetings')  || 10,    0);
+    const mtpRate    = (v('mtp')               || 70)  / 100;
+    const ptcRate    = (v('ptc')               || 30)  / 100;
+    const ticketVal  = Math.max(v('ticketVal') || 500,   0);
+    const cur        = ($('ticketCur').value)  || 'UF';
+    const closingMos = v('closingTime')        || 1;
+    const fixedUF    = Math.max(v('fixedCost') || 60,    0);
+    const varUF      = Math.max(v('varCost')   || 3,     0);
+    const ufCLP      = v('ufToCLP')            || 37500;
+    const usdCLP     = v('usdToCLP')           || 950;
+
+    // Solo omitir si realmente no hay datos suficientes
+    if (meetings === 0 && ticketVal === 0) return;
+
+    const ticketUF   = toUF(ticketVal, cur, ufCLP, usdCLP);
+    const costMonthUF = fixedUF + varUF * meetings;
+    const dealsMonth  = meetings * mtpRate * ptcRate;
+    const revMonthUF  = dealsMonth * ticketUF;
+    const netMonthUF  = revMonthUF - costMonthUF;
+
+    // 12-month window: revenue only flows after closing delay
+    const revenueMonths = Math.max(0, 12 - closingMos);
+    const annualRevUF   = revMonthUF  * revenueMonths;
+    const annualCostUF  = costMonthUF * 12;
+    const annualNetUF   = annualRevUF - annualCostUF;
+    const roi = annualCostUF > 0 ? (annualNetUF / annualCostUF) * 100 : 0;
+
+    // Payback
+    let paybackTxt = '—';
+    if (revMonthUF > costMonthUF) {
+      const investDuringDelay = costMonthUF * closingMos;
+      const months = closingMos + investDuringDelay / (revMonthUF - costMonthUF);
+      paybackTxt = months <= 1 ? '< 1 mes' :
+                   months > 36 ? '> 36 meses' :
+                   'Payback: ' + months.toFixed(1) + ' meses';
+    } else {
+      paybackTxt = netMonthUF < 0 ? 'Negativo en estado estable' : 'Sin cierre de negocios';
+    }
+
+    // Mini summary
+    $('s-fixed').textContent = fmtUF(fixedUF);
+    $('s-var').textContent   = fmtUF(varUF * meetings);
+    $('s-total').textContent = fmtUF(costMonthUF);
+
+    // KPIs row 1
+    $('r-deals').textContent = dealsMonth < 0.1 ? dealsMonth.toFixed(3) :
+                               dealsMonth < 1   ? dealsMonth.toFixed(2) :
+                               dealsMonth.toFixed(1);
+
+    $('r-rev-m').textContent  = fmtFromUF(revMonthUF,  cur, ufCLP, usdCLP);
+    $('r-rev-m-uf').textContent = cur !== 'UF' ? fmtUF(revMonthUF) : '';
+
+    $('r-cost-m').textContent = fmtUF(costMonthUF);
+
+    const netColor = netMonthUF >= 0 ? '#4DFFB8' : '#FF6B6B';
+    $('r-net-m').style.color    = netColor;
+    $('r-net-m').textContent    = fmtFromUF(netMonthUF, cur, ufCLP, usdCLP);
+    $('r-net-m-uf').textContent = cur !== 'UF' ? fmtUF(netMonthUF) : '';
+
+    // KPIs row 2
+    $('r-rev-a').textContent  = fmtFromUF(annualRevUF,  cur, ufCLP, usdCLP);
+    $('r-rev-a-uf').textContent = cur !== 'UF' ? fmtUF(annualRevUF) : '';
+
+    $('r-cost-a').textContent = fmtUF(annualCostUF);
+
+    const netAColor = annualNetUF >= 0 ? '#4DFFB8' : '#FF6B6B';
+    $('r-net-a').style.color    = netAColor;
+    $('r-net-a').textContent    = fmtFromUF(annualNetUF, cur, ufCLP, usdCLP);
+    $('r-net-a-uf').textContent = cur !== 'UF' ? fmtUF(annualNetUF) : '';
+
+    const roiEl = $('r-roi');
+    roiEl.style.color   = roi >= 0 ? '#00D9C8' : '#FF6B6B';
+    roiEl.textContent   = (roi >= 0 ? '+' : '') + roi.toFixed(0) + '%';
+    $('r-payback').textContent = paybackTxt;
+
+    // Bar
+    const barPct = Math.min(Math.max(roi, 0), 500) / 500 * 100;
+    $('bar-fill').style.width = barPct + '%';
+    $('bar-mid').textContent  = 'ROI: ' + (roi >= 0 ? '+' : '') + roi.toFixed(0) + '%';
+    $('bar-max').textContent  = roi > 500 ? '> 500%' : '';
+
+    // Timeline note
+    let note = '';
+    if (closingMos >= 13) {
+      note = `⚠️ Con un ciclo de cierre <strong>mayor a 12 meses</strong>, no se generará ingreso en el primer año. La inversión se recupera a partir del año 2.`;
+    } else {
+      const effM = Math.floor(revenueMonths);
+      note = `Con un ciclo de cierre de <strong>${closingLabel(closingMos)}</strong>, los primeros ingresos llegan en el mes ${Math.ceil(closingMos) + 1}. `
+           + `Eso deja <strong>${effM} ${effM === 1 ? 'mes' : 'meses'} de ingresos</strong> en el primer año. `;
+      if (roi >= 0) {
+        note += `Utilidad neta estimada en 12 meses: <strong>${fmtFromUF(annualNetUF, cur, ufCLP, usdCLP)}</strong>.`;
+      } else {
+        note += `Con los parámetros actuales, la inversión <strong>no se recupera en el primer año</strong>. Ajusta las tasas o el ticket promedio.`;
+      }
+    }
+    $('timeline-note').innerHTML = note;
+  }
+
+  /* ── Fetch UF del día ──────────────────────────────── */
+  function fetchUF() {
+    try {
+      var ufInput = $('ufToCLP');
+      var note    = $('uf-note');
+      var today   = new Date();
+      var dd   = String(today.getDate()).padStart(2,'0');
+      var mm   = String(today.getMonth()+1).padStart(2,'0');
+      var yyyy = today.getFullYear();
+
+      fetch('https://mindicador.cl/api/uf/' + dd + '-' + mm + '-' + yyyy)
+        .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+        .then(function(data) {
+          var val = data.serie && data.serie[0] && data.serie[0].valor;
+          if (val) {
+            ufInput.value = Math.round(val);
+            note.textContent = 'UF ' + dd + '/' + mm + '/' + yyyy + ': $' + Math.round(val).toLocaleString('es-CL') + ' CLP';
+            calculate();
+          } else { throw new Error(); }
+        })
+        .catch(function() {
+          note.textContent = 'UF referencial: $37.500 CLP (sin conexión para actualizar).';
+        });
+    } catch(e) {
+      try { $('uf-note').textContent = 'UF referencial: $37.500 CLP.'; } catch(e2) {}
+    }
+  }
+
+  /* ── Inicialización robusta para iOS WebView / WhatsApp ── */
+  var _inited = false;
+  function safeInit() {
+    if (_inited) return;
+    _inited = true;
+    // Si JS corre, ocultar el aviso de "abrir en Safari"
+    try { var mn = $('mob-notice'); if (mn) mn.style.display = 'none'; } catch(e) {}
+    try { calculate(); } catch(e) {}
+    fetchUF();
+  }
+
+  // 1. Evento estándar
+  document.addEventListener('DOMContentLoaded', safeInit);
+
+  // 2. Si DOMContentLoaded ya pasó (archivo local o WebView rápido)
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    safeInit();
+  }
+
+  // 3. window.onload como respaldo adicional
+  window.addEventListener('load', function() {
+    try { calculate(); } catch(e) {}
+  });
+
+  // 4. Fallback tardío: corre 400ms después de que el script se parseó.
+  //    Garantiza que iOS WebView haya terminado de asignar valores a los inputs.
+  setTimeout(function() {
+    try { calculate(); } catch(e) {}
+  }, 400);
+
+  // ── Detectar WebView iOS (WhatsApp, Instagram, etc.) ──────────
+  // En Safari real, el UA incluye "Safari" pero NO incluye apps como WhatsApp.
+  // En WebView de apps, "Safari" no aparece en el UA.
+  (function() {
+    try {
+      var ua = window.navigator.userAgent || '';
+      var isIOS     = /iPhone|iPad|iPod/.test(ua);
+      var isAndroid = /Android/.test(ua);
+      // iOS: Safari real incluye "Safari" en UA; WebViews de apps no lo incluyen
+      var iosWebView = isIOS && !/Safari\//.test(ua);
+      // Android: apps como WhatsApp usan "wv" en el UA
+      var androidWebView = isAndroid && /wv/.test(ua);
+      // También detectar explícitamente WhatsApp
+      var inWhatsApp = /WhatsApp/.test(ua);
+
+      if (iosWebView || androidWebView || inWhatsApp) {
+        var ov = document.getElementById('webview-overlay');
+        if (ov) ov.style.display = 'flex';
+      }
+    } catch(e) {}
+  })();
+</script>
+</body>
+</html>
