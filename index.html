@@ -1011,30 +1011,37 @@
 
   /* ── Fetch UF del día ──────────────────────────────── */
   function fetchUF() {
-    try {
-      var ufInput = $('ufToCLP');
-      var note    = $('uf-note');
-      var today   = new Date();
-      var dd   = String(today.getDate()).padStart(2,'0');
-      var mm   = String(today.getMonth()+1).padStart(2,'0');
-      var yyyy = today.getFullYear();
+    var ufInput = $('ufToCLP');
+    var note    = $('uf-note');
 
-      fetch('https://mindicador.cl/api/uf/' + dd + '-' + mm + '-' + yyyy)
+    function tryDate(daysBack) {
+      var d = new Date();
+      d.setDate(d.getDate() - daysBack);
+      var dd   = String(d.getDate()).padStart(2,'0');
+      var mm   = String(d.getMonth()+1).padStart(2,'0');
+      var yyyy = d.getFullYear();
+      return fetch('https://mindicador.cl/api/uf/' + dd + '-' + mm + '-' + yyyy)
         .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
         .then(function(data) {
           var val = data.serie && data.serie[0] && data.serie[0].valor;
-          if (val) {
-            ufInput.value = Math.round(val);
-            note.textContent = 'UF ' + dd + '/' + mm + '/' + yyyy + ': $' + Math.round(val).toLocaleString('es-CL') + ' CLP';
-            calculate();
-          } else { throw new Error(); }
-        })
-        .catch(function() {
-          note.textContent = 'UF referencial: $37.500 CLP (sin conexión para actualizar).';
+          if (!val) throw new Error();
+          return { val: val, dd: dd, mm: mm, yyyy: yyyy };
         });
-    } catch(e) {
-      try { $('uf-note').textContent = 'UF referencial: $37.500 CLP.'; } catch(e2) {}
     }
+
+    // Intenta hoy, luego ayer, luego anteayer (cubre fines de semana y festivos)
+    tryDate(0)
+      .catch(function() { return tryDate(1); })
+      .catch(function() { return tryDate(2); })
+      .then(function(res) {
+        ufInput.value = Math.round(res.val);
+        note.textContent = 'UF ' + res.dd + '/' + res.mm + '/' + res.yyyy
+          + ': $' + Math.round(res.val).toLocaleString('es-CL') + ' CLP';
+        calculate();
+      })
+      .catch(function() {
+        note.textContent = 'UF referencial: $39.500 CLP (sin conexión para actualizar).';
+      });
   }
 
   /* ── Inicialización robusta para iOS WebView / WhatsApp ── */
