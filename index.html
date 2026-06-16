@@ -765,7 +765,7 @@
         <div class="kpi">
           <div class="kpi-label">Costo mensual BullsEye</div>
           <div class="kpi-value" id="r-cost-m">90.0 UF</div>
-          <div class="kpi-sub">en UF</div>
+          <div class="kpi-sub" id="r-cost-m-uf"></div>
         </div>
         <div class="kpi green">
           <div class="kpi-label">Utilidad neta mensual</div>
@@ -784,7 +784,7 @@
         <div class="kpi">
           <div class="kpi-label">Inversión anual BullsEye</div>
           <div class="kpi-value" id="r-cost-a">1.1K UF</div>
-          <div class="kpi-sub">en UF</div>
+          <div class="kpi-sub" id="r-cost-a-uf"></div>
         </div>
         <div class="kpi green">
           <div class="kpi-label">Utilidad neta anual</div>
@@ -1003,7 +1003,8 @@
     $('r-rev-m').textContent  = fmtFromUF(revMonthUF,  cur, ufCLP, usdCLP);
     $('r-rev-m-uf').textContent = cur !== 'UF' ? fmtUF(revMonthUF) : '';
 
-    $('r-cost-m').textContent = fmtUF(costMonthUF);
+    $('r-cost-m').textContent    = fmtFromUF(costMonthUF, cur, ufCLP, usdCLP);
+    $('r-cost-m-uf').textContent = cur !== 'UF' ? fmtUF(costMonthUF) : '';
 
     const netColor = netMonthUF >= 0 ? '#4DFFB8' : '#FF6B6B';
     $('r-net-m').style.color    = netColor;
@@ -1014,7 +1015,8 @@
     $('r-rev-a').textContent  = fmtFromUF(annualRevUF,  cur, ufCLP, usdCLP);
     $('r-rev-a-uf').textContent = cur !== 'UF' ? fmtUF(annualRevUF) : '';
 
-    $('r-cost-a').textContent = fmtUF(annualCostUF);
+    $('r-cost-a').textContent    = fmtFromUF(annualCostUF, cur, ufCLP, usdCLP);
+    $('r-cost-a-uf').textContent = cur !== 'UF' ? fmtUF(annualCostUF) : '';
 
     const netAColor = annualNetUF >= 0 ? '#4DFFB8' : '#FF6B6B';
     $('r-net-a').style.color    = netAColor;
