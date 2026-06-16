@@ -683,18 +683,26 @@
       <div class="card-title">Inversión en BullsEye</div>
 
       <div class="cost-box">
-        <p class="cost-box-note">
-          Valores editables según tu propuesta comercial. Todos los costos están en <strong>UF</strong>.
-        </p>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;">
+          <p class="cost-box-note" style="margin:0;">
+            Valores editables según tu propuesta comercial.
+          </p>
+          <select id="costCur" class="currency-select" data-prev="UF"
+                  style="width:auto;min-width:76px;flex-shrink:0;"
+                  onchange="syncCostCurrency();calculate()">
+            <option value="UF">UF</option>
+            <option value="USD">USD</option>
+          </select>
+        </div>
 
         <div class="field">
-          <label>Costo mensual fijo <span class="hint">(UF / mes)</span></label>
+          <label>Costo mensual fijo <span class="hint">(<span id="cost-cur-fixed">UF</span> / mes)</span></label>
           <input type="number" id="fixedCost" min="0" step="0.5" value="60"
                  inputmode="decimal" oninput="calculate()" onchange="calculate()" />
         </div>
 
         <div class="field">
-          <label>Costo variable por reunión calificada <span class="hint">(UF / reunión)</span></label>
+          <label>Costo variable por reunión calificada <span class="hint">(<span id="cost-cur-var">UF</span> / reunión)</span></label>
           <input type="number" id="varCost" min="0" step="0.1" value="3"
                  inputmode="decimal" oninput="calculate()" onchange="calculate()" />
         </div>
@@ -855,6 +863,34 @@
     $(vid).textContent = $(sid).value + '%';
   }
 
+  function syncCostCurrency() {
+    var sel    = $('costCur');
+    var newCur = sel.value;
+    var prevCur = sel.dataset.prev || 'UF';
+    var ufCLP  = v('ufToCLP')  || 37500;
+    var usdCLP = v('usdToCLP') || 950;
+
+    if (prevCur !== newCur) {
+      var fixedEl = $('fixedCost');
+      var varEl   = $('varCost');
+      var fUF = toUF(parseFloat(fixedEl.value) || 0, prevCur, ufCLP, usdCLP);
+      var vUF = toUF(parseFloat(varEl.value)   || 0, prevCur, ufCLP, usdCLP);
+      if (newCur === 'UF') {
+        fixedEl.step  = '0.5';  varEl.step  = '0.1';
+        fixedEl.value = fUF.toFixed(1);
+        varEl.value   = vUF.toFixed(2);
+      } else {
+        fixedEl.step  = '10';   varEl.step  = '1';
+        fixedEl.value = Math.round((fUF * ufCLP) / usdCLP);
+        varEl.value   = Math.round((vUF * ufCLP) / usdCLP);
+      }
+    }
+
+    sel.dataset.prev = newCur;
+    $('cost-cur-fixed').textContent = newCur + ' / mes';
+    $('cost-cur-var').textContent   = newCur + ' / reunión';
+  }
+
   function fmt(n, cur, ufCLP, usdCLP) {
     const ufVal = cur === 'CLP' ? n / ufCLP : cur === 'USD' ? (n * usdCLP) / ufCLP : n;
     // Display in chosen currency
@@ -917,10 +953,13 @@
     const ticketVal  = Math.max(v('ticketVal') || 500,   0);
     const cur        = ($('ticketCur').value)  || 'UF';
     const closingMos = v('closingTime')        || 1;
-    const fixedUF    = Math.max(v('fixedCost') || 60,    0);
-    const varUF      = Math.max(v('varCost')   || 3,     0);
     const ufCLP      = v('ufToCLP')            || 37500;
     const usdCLP     = v('usdToCLP')           || 950;
+    const costCur    = ($('costCur').value)    || 'UF';
+    const fixedVal   = Math.max(v('fixedCost') || 60,    0);
+    const varVal     = Math.max(v('varCost')   || 3,     0);
+    const fixedUF    = toUF(fixedVal, costCur, ufCLP, usdCLP);
+    const varUF      = toUF(varVal,   costCur, ufCLP, usdCLP);
 
     // Solo omitir si realmente no hay datos suficientes
     if (meetings === 0 && ticketVal === 0) return;
@@ -950,10 +989,11 @@
       paybackTxt = netMonthUF < 0 ? 'Negativo en estado estable' : 'Sin cierre de negocios';
     }
 
-    // Mini summary
-    $('s-fixed').textContent = fmtUF(fixedUF);
-    $('s-var').textContent   = fmtUF(varUF * meetings);
-    $('s-total').textContent = fmtUF(costMonthUF);
+    // Mini summary (en moneda de costos seleccionada)
+    var fmtC = function(n) { return costCur === 'USD' ? fmtUSD(n) : fmtUF(n); };
+    $('s-fixed').textContent = fmtC(fixedVal);
+    $('s-var').textContent   = fmtC(varVal * meetings);
+    $('s-total').textContent = fmtC(fixedVal + varVal * meetings);
 
     // KPIs row 1
     $('r-deals').textContent = dealsMonth < 0.1 ? dealsMonth.toFixed(3) :
