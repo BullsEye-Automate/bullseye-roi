@@ -887,8 +887,8 @@
     }
 
     sel.dataset.prev = newCur;
-    $('cost-cur-fixed').textContent = newCur + ' / mes';
-    $('cost-cur-var').textContent   = newCur + ' / reunión';
+    $('cost-cur-fixed').textContent = newCur;
+    $('cost-cur-var').textContent   = newCur;
   }
 
   function fmt(n, cur, ufCLP, usdCLP) {
@@ -1003,8 +1003,8 @@
     $('r-rev-m').textContent  = fmtFromUF(revMonthUF,  cur, ufCLP, usdCLP);
     $('r-rev-m-uf').textContent = cur !== 'UF' ? fmtUF(revMonthUF) : '';
 
-    $('r-cost-m').textContent    = fmtFromUF(costMonthUF, cur, ufCLP, usdCLP);
-    $('r-cost-m-uf').textContent = cur !== 'UF' ? fmtUF(costMonthUF) : '';
+    $('r-cost-m').textContent = fmtFromUF(costMonthUF, cur, ufCLP, usdCLP);
+    if ($('r-cost-m-uf')) $('r-cost-m-uf').textContent = cur !== 'UF' ? fmtUF(costMonthUF) : '';
 
     const netColor = netMonthUF >= 0 ? '#4DFFB8' : '#FF6B6B';
     $('r-net-m').style.color    = netColor;
@@ -1015,8 +1015,8 @@
     $('r-rev-a').textContent  = fmtFromUF(annualRevUF,  cur, ufCLP, usdCLP);
     $('r-rev-a-uf').textContent = cur !== 'UF' ? fmtUF(annualRevUF) : '';
 
-    $('r-cost-a').textContent    = fmtFromUF(annualCostUF, cur, ufCLP, usdCLP);
-    $('r-cost-a-uf').textContent = cur !== 'UF' ? fmtUF(annualCostUF) : '';
+    $('r-cost-a').textContent = fmtFromUF(annualCostUF, cur, ufCLP, usdCLP);
+    if ($('r-cost-a-uf')) $('r-cost-a-uf').textContent = cur !== 'UF' ? fmtUF(annualCostUF) : '';
 
     const netAColor = annualNetUF >= 0 ? '#4DFFB8' : '#FF6B6B';
     $('r-net-a').style.color    = netAColor;
